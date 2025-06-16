@@ -1,125 +1,87 @@
-#!/usr/bin/env ruby
+# frozen_string_literal: true
 
-# ^ Tells the OS how to execute the file when run directly from the terminal.
-# Uses the Ruby in $PATH
+require 'bundler/setup'
 
-require 'json'
-require 'fileutils'
-require 'date'
+require 'models/github_repo_importer'
+require 'models/project'
+require 'repositories/project_repository'
+require 'views/core'
+require 'views/projects'
 
-PROJECTS_DIR = File.expand_path('~/.clarity/projects')
+command = ARGV.shift
 
-def usage
-  puts <<~USAGE
-    Usage: clarity COMMAND [ARGS]
+case command
+when 'sync'
+  Clarity::GithubRepoImporter.call
+when 'list'
+  project_repo = Clarity::ProjectRepository.new
+  projects = project_repo.all
 
-    Commands:
-      list               List all projects
-      new NAME           Create a new project
-      finish NAME        Mark project as finished
-      help                Prints this message
-  USAGE
-  exit 1
-end
-
-def list_projects
-  projects = Dir.glob("#{PROJECTS_DIR}/*.json").map do |file|
-    JSON.parse(File.read(file), symbolize_names: true)
-  end
-
-  if projects.empty?
-    puts "No projects found."
+  option = ARGV.shift
+  unless option
+    Clarity::ProjectsView.list(projects)
     return
   end
 
-  projects.each do |project|
-    status = project['status']
-    name = project['name']
-    summary = project['summary']
-    puts "[#{status}] #{name} - #{summary}"
+  case option
+  when 'sort'
+    sort_param = ARGV.shift
+    unless sort_param
+      Clarity::CoreView.usage_help
+      return
+    end
+    projects_sorted = project_repo.sort_projects(projects, sort_param)
+    Clarity::ProjectsView.list(projects_sorted)
   end
-end
+when 'update'
+  project_repo = Clarity::ProjectRepository.new
+  projects = project_repo.all
 
-def new_project(name)
-  if load_project(name)
-    puts "Project '#{name}' already exists."
-    exit 1
-  end
-
-  summary = prompt("Summary:")
-  effort = prompt("Estimated effort (e.g. 1hr, weekend):")
-  excitement = prompt("Excitement (1-5):").to_i
-  motivation = prompt("Motivation/why?")
-
-  project = {
-    name: name,
-    summary: summary,
-    effort: effort,
-    excitement: excitement,
-    motivation: motivation,
-    status: 'inbox',
-    created_at: Date.today.to_s
-  }
-
-  save_project(name, project)
-  puts "Created project '#{name}'"
-end
-
-def finish_project(name)
-  project = load_project(name)
-  unless project
-    puts "Project '#{name}' not found."
-    exit 1
+  id = ARGV.shift.to_i
+  unless id
+    Clarity::CoreView.usage_help
+    return
   end
 
-  if project['status'] == 'finished'
-    puts "Project '#{name}' is already finished."
-    exit 1
+  project = project_repo.find(id)
+  puts "Updating #{project.name}"
+
+  until Clarity::Project::STATUSES.keys.include?(project.status.to_sym)
+    status = Clarity::CoreView.prompt('Status [deployed/development/archived/paused/idea/abandoned]:')
+    project.status = status
   end
 
-  confirm = prompt("Mark project '#{name}' as finished? (y/n)")
-  if confirm.downcase == 'y'
-    project[:status] = 'finished'
-    project[:finished_at] = Date.today.to_s
-
-    save_project(name, project)
-    puts "Project '#{name}' marked as finished."
-  else
-    puts "Cancelled."
+  until Clarity::Project::URGENCIES.keys.include?(project.urgency.to_sym)
+    urgency = Clarity::CoreView.prompt('Urgency [high/medium/low/none]:')
+    project.urgency = urgency
   end
-end
 
-def load_project(name)
-  path = File.join(PROJECTS_DIR, "#{name}.json")
-  return nil unless File.exist?(path)
+  until Clarity::Project::TYPES.keys.include?(project.type.to_sym)
+    type = Clarity::CoreView.prompt('Type [paid/teaching/job/paused/learning/personal]:')
+    project.type = type
+  end
 
-  JSON.parse(File.read(path), symbolize_names: true)
-end
+  until Clarity::Project::MOTIVATIONS.keys.include?(project.motivation.to_sym)
+    motivation = Clarity::CoreView.prompt('Motivation [hot/warm/cold/blocked/dread/finished]:')
+    project.motivation = motivation
+  end
 
-def save_project(name, data)
-  path = File.join(PROJECTS_DIR, "#{name}.json")
-  File.write(path, JSON.pretty_generate(data))
-end
+  project_repo.save(project)
+  puts 'Saved!'
 
-def prompt(question)
-  print "#{question} "
-  gets.chomp
-end
+# when 'new'
+#   name = ARGV.shift
+#   Clarity::CoreView unless name
 
-command = ARGV.shift
-case command
-when 'new'
-  name = ARGV.shift
-  usage unless name
+#   Clarity::ProjectRepository.new(name)
+# when 'finish'
+#   name = ARGV.shift
+#   Clarity::CoreView unless name
 
-  new_project(name)
-when 'list'
-  list_projects
-when 'finish'
-  name = ARGV.shift
-  usage unless name
-
-  finish_project(name)
+#   Clarity::ProjectRepository.finish(name)
+when 'help'
+  Clarity::CoreView.usage_help
 else
-  usage
+  puts "Unrecognised command: #{command}"
+  Clarity::CoreView.usage_help
 end
