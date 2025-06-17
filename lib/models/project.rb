@@ -7,7 +7,7 @@ module Clarity
     STATUSES = {
       deployed: '🚀',
       development: '🛠️',
-      archived: '🏁',
+      archived: '🗄️',
       paused: '⏸️',
       idea: '💡',
       abandoned: '☠️'
@@ -41,6 +41,8 @@ module Clarity
     URGENCY_ORDER = URGENCIES.keys.each_with_index.to_h.freeze
     TYPE_ORDER = TYPES.keys.each_with_index.to_h.freeze
     MOTIVATION_ORDER = MOTIVATIONS.keys.each_with_index.to_h.freeze
+
+    SORT_OPTIONS = %w[name status priority type motivation created_at pushed_at].freeze
 
     attr_reader :id, :name, :full_name, :url, :description, :languages, :total_lines, :created_at, :pushed_at
     attr_accessor :status, :urgency, :type, :motivation
