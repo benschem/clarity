@@ -1,9 +1,12 @@
 #!/usr/bin/env ruby
-#
-# This comment tells the OS how to execute the file when run directly from the terminal
+# frozen_string_literal: true
+
+# The `#!` shebang comment tells the OS how to execute the file when run directly from the terminal
 # Uses the Ruby in `$PATH`
 
-# Adds app library code to `$PATH` so I can use `require`
-$LOAD_PATH.unshift(File.expand_path('../lib', __dir__))
+# Adds app library directory to `$PATH` so I can `require` my own code
+lib_dir = File.expand_path(File.join(__dir__, '..', 'lib'))
+$LOAD_PATH << lib_dir unless $LOAD_PATH.include?(lib_dir)
 
-require_relative '../app'
+require 'cli'
+Clarity::CLI.run(ARGV)
