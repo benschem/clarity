@@ -6,6 +6,24 @@ module Clarity
   class ProjectsView
     MAX_DESCRIPTION_LENGTH = 60
 
+    def display_one(project)
+      rows = [
+        [project.id, project.status, project.name],
+        [project.description]
+      ]
+      table = Terminal::Table.new do |t|
+        # t.headings = %w[id stts urgc name type description mtvn]
+        t.rows = rows
+        t.style = { all_separators: true }
+        # t.align_column(1, :center)
+        # t.align_column(2, :center)
+        # t.align_column(4, :center)
+        # t.align_column(6, :center)
+      end
+
+      puts table
+    end
+
     def display_list(projects)
       if projects.empty?
         puts 'No projects found.'

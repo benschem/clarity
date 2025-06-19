@@ -20,16 +20,20 @@ module Clarity
       new.run(argv)
     end
 
-    def run(args)
-      command = args.shift
+    def run(argv)
+      command = argv.shift
 
       case command
       when 'sync'
         @controller.sync_projects
       when 'list'
         @controller.list_projects(@options)
+      when 'show'
+        id = argv.shift
+        @controller.show_project(id)
       when 'update'
-        @controller.update_project
+        id = argv.shift
+        @controller.update_project(id)
       when 'help'
         puts @parser
       else

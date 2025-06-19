@@ -4,6 +4,7 @@ module Clarity
   class ProjectsController
     def initialize
       @view = Clarity::ProjectsView.new
+      @projects_repository = Clarity::ProjectRepository.new
     end
 
     def sync_projects
@@ -11,7 +12,7 @@ module Clarity
     end
 
     def list_projects(options)
-      projects = Clarity::ProjectRepository.new.all
+      projects = @projects_repository.all
 
       projects = filter(projects, options[:filters]) if options[:filters]
       projects = sort(projects, options[:sort]) if options[:sort]
@@ -21,16 +22,33 @@ module Clarity
       @view.display_list(projects)
     end
 
-    def update_project
-      project_repo = Clarity::ProjectRepository.new
-
-      id = args.shift.to_i
+    def show_project(id)
       unless id
-        # how to print help?
-        return
+        warn 'Error: Please enter the id of the project'
+        exit 1
       end
 
-      project = project_repo.find(id)
+      project = @projects_repository.find(id.to_i)
+      unless project
+        warn "Error: No project with id: #{id}"
+        exit 1
+      end
+
+      @view.display_one(project)
+    end
+
+    def update_project(id)
+      unless id
+        warn 'Please enter the id of the project'
+        exit 1
+      end
+
+      project = @projects_repository.find(id.to_i)
+      unless project
+        warn "Error: No project with id: #{id}"
+        exit 1
+      end
+
       puts "Updating #{project.name}"
 
       until Clarity::Project::STATUSES.keys.include?(project.status.to_sym)
@@ -53,7 +71,7 @@ module Clarity
         project.motivation = motivation
       end
 
-      project_repo.save(project)
+      projects.save(project)
       puts 'Saved!'
     end
 
