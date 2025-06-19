@@ -74,7 +74,7 @@ module Clarity
     def self.fetch_repo_data
       with_retries { client.repos }
     rescue Octokit::Error => e
-      puts "Error: Unable to fetch repos: #{e.class} - #{e.message}"
+      warn "Error: Unable to fetch repos: #{e.class} - #{e.message}"
       []
     end
 
@@ -83,9 +83,9 @@ module Clarity
       FileUtils.mkdir_p(File.dirname(output_file))
       File.write(output_file, JSON.pretty_generate(repo))
     rescue JSON::GeneratorError => e
-      puts "Error: JSON generation failed while trying to write repo to file: #{e.class} - #{e.message}"
+      warn "Error: JSON generation failed while trying to write repo to file: #{e.class} - #{e.message}"
     rescue SystemCallError, IOError => e
-      puts "Error: File write failed while trying to write repo to file: #{e.class} - #{e.message}"
+      warn "Error: File write failed while trying to write repo to file: #{e.class} - #{e.message}"
     end
 
     def self.build_repos(repo_data)
@@ -135,7 +135,7 @@ module Clarity
         # Wait for all threads to finish
         workers.each(&:join)
       rescue ThreadError => e
-        puts "Error joining threads while getting languages: #{e.class} - #{e.message}"
+        warn "Error joining threads while getting languages: #{e.class} - #{e.message}"
         return []
       end
 
@@ -145,10 +145,10 @@ module Clarity
     def self.fetch_languages(repo, client)
       with_retries { client.languages(repo.full_name).to_h }
     rescue Octokit::Error => e
-      puts "Github API error while fetching languages #{e.class} - #{e.message}"
+      warn "Github API error while fetching languages #{e.class} - #{e.message}"
       {}
     rescue StandardError => e
-      puts "Unexpected error while fetching languages #{e.class} - #{e.message}"
+      warn "Unexpected error while fetching languages #{e.class} - #{e.message}"
       {}
     end
 
@@ -163,7 +163,7 @@ module Clarity
           sleep delay
           retry
         else
-          puts "Failed after #{limit} attempts: #{e.class} - #{e.message}"
+          warn "Failed after #{limit} attempts: #{e.class} - #{e.message}"
           {}
         end
       end
