@@ -10,7 +10,9 @@ module Clarity
       @commands = {
         'sync': 'Sync from GitHub',
         'list': 'Show all projects',
-        'update': 'Update a project'
+        'show ID': 'Show a project by ID',
+        'update ID': 'Update a project by ID',
+        'filters': 'Show filter options for list command'
       }
       @valid_sort_options = Clarity::Project::SORT_OPTIONS
       @options = { filters: Hash.new { |h, k| h[k] = [] } }
@@ -22,7 +24,7 @@ module Clarity
         add_banner(opts)
         add_command_list(opts)
 
-        opts.separator 'List options for commands (in order of operation):'
+        opts.separator 'Options for list command (in order of operation):'
         add_filter_option(opts)
         add_sort_option(opts)
         add_order_option(opts)
@@ -42,14 +44,14 @@ module Clarity
     private
 
     def add_banner(opts)
-      opts.banner = "usage: #{Clarity::CLI::PROGRAM_NAME} [command] [option ARG] ..."
+      opts.banner = "Usage:\n> #{Clarity::CLI::PROGRAM_NAME} [command] ARG --[option] ARG ..."
       opts.separator ''
     end
 
     def add_command_list(opts)
       opts.separator 'Commands:'
       @commands.each do |command, description|
-        opts.separator "    #{command.to_s.ljust(10)} #{description}"
+        opts.separator "    #{command.to_s.ljust(12)} #{description}"
       end
       opts.separator ''
     end

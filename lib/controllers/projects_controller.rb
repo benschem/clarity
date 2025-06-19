@@ -71,25 +71,54 @@ module Clarity
         project.motivation = motivation
       end
 
-      projects.save(project)
+      @projects_repository.save(project)
       puts 'Saved!'
+    end
+
+    def list_filters
+      filters = Clarity::Project::FILTERS
+      @view.display_filters(filters)
     end
 
     private
 
-    def filter(projects, filters)
+    def filter(projects, user_filters)
       projects.select do |project|
-        filters.all? do |field, expected_values|
-          next true if expected_values.empty?
+        user_filters.all? do |filter_by, filter_values|
+          next true if filter_values.empty?
 
-          actual = project.send(field)
-
-          if actual.is_a?(Array)
-            (actual & expected_values).any?
-          else
-            expected_values.include?(actual.to_s)
-          end
+          matches_filter?(project, filter_by, filter_values)
         end
+      end
+    end
+
+    def matches_filter?(project, filter_by, user_filters)
+      project_value = project.send(filter_by)
+
+      case project_value
+      when Array
+        user_filters_downcased = user_filters.map(&:downcase)
+        shared_values = project_value & user_filters_downcased
+        shared_values.any?
+      when String
+        # In case the user filters by multiple names
+        user_filters.any? do |user_filter|
+          # Check if the name contains the string the user filtered for
+          project_value.to_s.downcase.include?(user_filter.downcase)
+        end
+      when Hash
+        # This all and needs fixing
+        # Languages is currently the only property of a Project that's a Hash
+        # But if any other Hash properties get added, this will break
+        # A better approach might be to get rid of this whole case statement and
+        # write a to_filterable method to normalise project_value to a string
+        user_filters_downcased = user_filters.map(&:downcase)
+
+        project_languages = project_value
+        languages_as_array = project_languages.keys.first(4).map(&:to_s).map(&:downcase)
+
+        shared_values = languages_as_array & user_filters_downcased
+        shared_values.any?
       end
     end
 

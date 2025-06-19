@@ -44,6 +44,18 @@ module Clarity
 
     SORT_OPTIONS = %w[name status urgency type motivation created_at pushed_at].freeze
 
+    FILTERS = {
+      status: STATUSES.keys.map(&:to_s),
+      urgency: URGENCIES.keys.map(&:to_s),
+      name: :text,
+      type: TYPES.keys.map(&:to_s),
+      description: :text,
+      motivation: MOTIVATIONS.keys.map(&:to_s),
+      languages: :text,
+      full_name: :text,
+      url: :text
+    }.freeze
+
     attr_reader :id, :name, :full_name, :url, :description, :languages, :total_lines, :created_at, :pushed_at
     attr_accessor :status, :urgency, :type, :motivation
 
@@ -63,11 +75,11 @@ module Clarity
       @motivation = attributes[:motivation]
     end
 
-    def created_ago
+    def created_days_ago
       date_ago(created_at)
     end
 
-    def pushed_ago
+    def pushed_days_ago
       date_ago(pushed_at)
     end
 

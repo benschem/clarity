@@ -34,6 +34,8 @@ module Clarity
       when 'update'
         id = argv.shift
         @controller.update_project(id)
+      when 'filters'
+        @controller.list_filters
       when 'help'
         puts @parser
       else
