@@ -5,7 +5,7 @@ require 'config/environment'
 module Clarity
   class CLI
     PROGRAM_NAME = 'clarity'
-    VERSION = '0.0.1'
+    VERSION = '0.1.0'
 
     attr_reader :option_parser
 
@@ -37,10 +37,10 @@ module Clarity
       when 'filters'
         @controller.list_filters
       when 'help'
-        puts @parser
+        puts @parser.parser
       else
         warn "Unrecognised command: #{command}"
-        puts @parser
+        puts @parser.parser
       end
     end
   end

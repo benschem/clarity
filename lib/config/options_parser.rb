@@ -4,7 +4,7 @@ module Clarity
   class OptionsParser
     VALID_ORDER_OPTIONS = %w[asc desc].freeze
 
-    attr_reader :options
+    attr_reader :options, :parser
 
     def initialize
       @commands = {
@@ -16,11 +16,11 @@ module Clarity
       }
       @valid_sort_options = Clarity::Project::SORT_OPTIONS
       @options = { filters: Hash.new { |h, k| h[k] = [] } }
-      build_parser
+      @parser = build_parser
     end
 
     def build_parser
-      @parser = OptionParser.new do |opts|
+      OptionParser.new do |opts|
         add_banner(opts)
         add_command_list(opts)
 
