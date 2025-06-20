@@ -25,8 +25,8 @@ module Clarity
       end
     end
 
-    def find(id)
-      @projects.find { |project| project.id == id }
+    def find(name)
+      @projects.find { |project| project.name == name }
     end
 
     def save(project)

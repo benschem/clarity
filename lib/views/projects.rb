@@ -7,7 +7,6 @@ module Clarity
     MAX_DESCRIPTION_LENGTH = 60
 
     def display_one(project)
-      puts "[#{project.id}]"
       puts '----'
       puts project.name
       puts '----'
@@ -38,11 +37,11 @@ module Clarity
         puts "\n(No `todo.md` file found in #{project_dir})"
       end
       # rows = [
-      #   [project.id.to_s, "#{create_status(project)} #{project.status}", "#{create_urgency(project)} #{project.urgency}",
+      #   ["#{create_status(project)} #{project.status}", "#{create_urgency(project)} #{project.urgency}",
       #    project.name.to_s, "#{create_type(project)} #{project.type}", "#{create_motivation(project)} #{project.motivation}"]
       # ]
       # table = Terminal::Table.new do |t|
-      #   t.headings = %w[id status urgcency name type motivation]
+      #   t.headings = %w[status urgcency name type motivation]
       #   t.rows = rows
       #   t.style = { all_separators: true }
       #   t.align_column(1, :center)
@@ -69,7 +68,7 @@ module Clarity
       rows = create_rows(projects)
 
       table = Terminal::Table.new do |t|
-        t.headings = %w[id stts urgc name type description mtvn]
+        t.headings = %w[stts urgc name type description mtvn]
         t.rows = rows
         t.style = { all_separators: true }
         t.align_column(1, :center)
@@ -105,7 +104,6 @@ module Clarity
 
     def create_rows(projects)
       projects.map do |project|
-        id = project.id
         name = project.name
         description = create_description(project)
         status = create_status(project)
@@ -113,7 +111,7 @@ module Clarity
         type = create_type(project)
         motivation = create_motivation(project)
 
-        [id, status, urgency, name, type, description, motivation]
+        [status, urgency, name, type, description, motivation]
       end
     end
 

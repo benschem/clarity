@@ -92,7 +92,6 @@ module Clarity
       language_data = fetch_language_data(repo_data)
       repo_data.zip(language_data || []).each_with_index.map do |(repo, languages), index|
         {
-          id: index + 1,
           name: repo.name,
           full_name: repo.full_name,
           url: repo.html_url,

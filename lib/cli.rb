@@ -29,11 +29,11 @@ module Clarity
       when 'list'
         @controller.list_projects(@options)
       when 'show'
-        id = argv.shift
-        @controller.show_project(id)
+        name = argv.shift
+        @controller.show_project(name)
       when 'update'
-        id = argv.shift
-        @controller.update_project(id)
+        name = argv.shift
+        @controller.update_project(name)
       when 'filters'
         @controller.list_filters
       when 'help'

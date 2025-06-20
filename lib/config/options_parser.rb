@@ -10,8 +10,8 @@ module Clarity
       @commands = {
         'sync': 'Sync from GitHub',
         'list': 'Show all projects',
-        'show ID': 'Show a project by ID',
-        'update ID': 'Update a project by ID (or type `all` to update all projects without metadata)',
+        'show NAME': 'Show a project by NAME',
+        'update NAME': 'Update a project by NAME (or type `all` to update all projects without metadata)',
         'filters': 'Show filter options for list command'
       }
       @valid_sort_options = Clarity::Project::SORT_OPTIONS

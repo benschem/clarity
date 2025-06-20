@@ -56,11 +56,10 @@ module Clarity
       url: :text
     }.freeze
 
-    attr_reader :id, :name, :full_name, :url, :description, :languages, :total_lines, :created_at, :pushed_at
+    attr_reader :name, :full_name, :url, :description, :languages, :total_lines, :created_at, :pushed_at
     attr_accessor :status, :urgency, :type, :motivation
 
     def initialize(attributes = {})
-      @id = attributes[:id]
       @name = attributes[:name]
       @full_name = attributes[:full_name]
       @url = attributes[:url]

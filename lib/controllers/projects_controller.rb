@@ -22,28 +22,28 @@ module Clarity
       @view.display_list(projects)
     end
 
-    def show_project(id)
-      unless id
-        warn 'Error: Please enter the id of the project'
+    def show_project(name)
+      unless name
+        warn 'Error: Please enter the name of the project'
         exit 1
       end
 
-      project = @projects_repository.find(id.to_i)
+      project = @projects_repository.find(name)
       unless project
-        warn "Error: No project with id: #{id}"
+        warn "Error: No project with name: #{name}"
         exit 1
       end
 
       @view.display_one(project)
     end
 
-    def update_project(id)
-      unless id
-        warn 'Please enter the id of the project'
+    def update_project(name)
+      unless name
+        warn 'Please enter the name of the project'
         exit 1
       end
 
-      if id == 'all'
+      if name == 'all'
         projects = @projects_repository.all_with_no_metadata
         projects.each do |project|
           prompt_to_update(project)
@@ -51,10 +51,10 @@ module Clarity
           puts 'Saved!'
         end
       else
-        project = @projects_repository.find(id.to_i)
+        project = @projects_repository.find(name)
 
         unless project
-          warn "Error: No project with id: #{id}"
+          warn "Error: No project with name: #{name}"
           exit 1
         end
 
