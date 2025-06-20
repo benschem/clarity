@@ -43,36 +43,25 @@ module Clarity
         exit 1
       end
 
-      project = @projects_repository.find(id.to_i)
-      unless project
-        warn "Error: No project with id: #{id}"
-        exit 1
+      if id == 'all'
+        projects = @projects_repository.all_with_no_metadata
+        projects.each do |project|
+          prompt_to_update(project)
+          @projects_repository.save(project)
+          puts 'Saved!'
+        end
+      else
+        project = @projects_repository.find(id.to_i)
+
+        unless project
+          warn "Error: No project with id: #{id}"
+          exit 1
+        end
+
+        prompt_to_update(project)
+        @projects_repository.save(project)
+        puts 'Saved!'
       end
-
-      puts "Updating #{project.name}"
-
-      until Clarity::Project::STATUSES.keys.include?(project.status.to_sym)
-        status = Clarity::CoreView.prompt('Status [deployed/development/archived/paused/idea/abandoned]:')
-        project.status = status
-      end
-
-      until Clarity::Project::URGENCIES.keys.include?(project.urgency.to_sym)
-        urgency = Clarity::CoreView.prompt('Urgency [high/medium/low/none]:')
-        project.urgency = urgency
-      end
-
-      until Clarity::Project::TYPES.keys.include?(project.type.to_sym)
-        type = Clarity::CoreView.prompt('Type [paid/teaching/job/paused/learning/personal]:')
-        project.type = type
-      end
-
-      until Clarity::Project::MOTIVATIONS.keys.include?(project.motivation.to_sym)
-        motivation = Clarity::CoreView.prompt('Motivation [hot/warm/cold/blocked/dread/finished]:')
-        project.motivation = motivation
-      end
-
-      @projects_repository.save(project)
-      puts 'Saved!'
     end
 
     def list_filters
@@ -133,6 +122,30 @@ module Clarity
         when 'created_at' then Time.parse(project.created_at.to_s)
         when 'pushed_at'  then Time.parse(project.pushed_at.to_s)
         end
+      end
+    end
+
+    def prompt_to_update(project)
+      puts "Updating #{project.name}"
+
+      until Clarity::Project::STATUSES.keys.include?(project.status.to_sym)
+        status = Clarity::CoreView.prompt('Status [deployed/development/archived/paused/idea/abandoned]:')
+        project.status = status
+      end
+
+      until Clarity::Project::URGENCIES.keys.include?(project.urgency.to_sym)
+        urgency = Clarity::CoreView.prompt('Urgency [high/medium/low/none]:')
+        project.urgency = urgency
+      end
+
+      until Clarity::Project::TYPES.keys.include?(project.type.to_sym)
+        type = Clarity::CoreView.prompt('Type [client/teaching/job/paused/learning/personal]:')
+        project.type = type
+      end
+
+      until Clarity::Project::MOTIVATIONS.keys.include?(project.motivation.to_sym)
+        motivation = Clarity::CoreView.prompt('Motivation [hot/warm/cold/blocked/dread/finished]:')
+        project.motivation = motivation
       end
     end
   end

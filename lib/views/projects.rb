@@ -25,6 +25,18 @@ module Clarity
       puts "[#{create_motivation(project)}] Motivation: #{project.motivation}"
       puts '----'
       puts project.description
+
+      project_dir = File.expand_path("~/code/benschem/#{project.name}")
+      todo_file = File.join(project_dir, 'todo.md')
+
+      if File.exist?(todo_file)
+        puts "\n----"
+        puts "Todo List (#{todo_file}):"
+        puts '----'
+        puts File.read(todo_file)
+      else
+        puts "\n(No `todo.md` file found in #{project_dir})"
+      end
       # rows = [
       #   [project.id.to_s, "#{create_status(project)} #{project.status}", "#{create_urgency(project)} #{project.urgency}",
       #    project.name.to_s, "#{create_type(project)} #{project.type}", "#{create_motivation(project)} #{project.motivation}"]

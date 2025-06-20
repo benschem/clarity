@@ -19,6 +19,12 @@ module Clarity
       @projects
     end
 
+    def all_with_no_metadata
+      @projects.select do |project|
+        (project.urgency.nil? || '') || (project.status.nil? || '') || (project.type.nil? || '') || (project.motivation.nil? || '')
+      end
+    end
+
     def find(id)
       @projects.find { |project| project.id == id }
     end
