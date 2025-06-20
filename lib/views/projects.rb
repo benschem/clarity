@@ -4,8 +4,6 @@ require 'terminal-table'
 
 module Clarity
   class ProjectsView
-    MAX_DESCRIPTION_LENGTH = 60
-
     def display_one(project)
       puts '----'
       puts project.name
@@ -68,13 +66,13 @@ module Clarity
       rows = create_rows(projects)
 
       table = Terminal::Table.new do |t|
-        t.headings = %w[stts urgc name type description mtvn]
+        t.headings = %w[stts urgc name type mtvn created pushed]
         t.rows = rows
         t.style = { all_separators: true }
+        t.align_column(0, :center)
         t.align_column(1, :center)
-        t.align_column(2, :center)
+        t.align_column(3, :center)
         t.align_column(4, :center)
-        t.align_column(6, :center)
       end
 
       puts table
@@ -105,18 +103,15 @@ module Clarity
     def create_rows(projects)
       projects.map do |project|
         name = project.name
-        description = create_description(project)
         status = create_status(project)
         urgency = create_urgency(project)
         type = create_type(project)
         motivation = create_motivation(project)
+        created = "#{project.created_days_ago} days ago"
+        pushed = "#{project.pushed_days_ago} days ago"
 
-        [status, urgency, name, type, description, motivation]
+        [status, urgency, name, type, motivation, created, pushed]
       end
-    end
-
-    def create_description(project)
-      "#{project.description[0..60]}..." if project.description&.length&.> MAX_DESCRIPTION_LENGTH
     end
 
     def create_status(project)
