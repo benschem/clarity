@@ -5,7 +5,7 @@ require 'config/environment'
 module Clarity
   class CLI
     PROGRAM_NAME = 'clarity'
-    VERSION = '0.1.0'
+    VERSION = '0.2.0'
 
     attr_reader :option_parser
 
@@ -13,7 +13,7 @@ module Clarity
       @parser = Clarity::OptionsParser.new
       @parser.parse!
       @options = @parser.options
-      @controller = Clarity::ProjectsController.new
+      @projects_controller = Clarity::ProjectsController.new
     end
 
     def self.run(argv)
@@ -25,17 +25,19 @@ module Clarity
 
       case command
       when 'sync'
-        @controller.sync_projects
+        @projects_controller.sync_with_github
       when 'list'
-        @controller.list_projects(@options)
+        @projects_controller.list(@options)
+      when 'recent'
+        @projects_controller.list_recent
       when 'show'
         name = argv.shift
-        @controller.show_project(name)
+        @projects_controller.show(name)
       when 'update'
         name = argv.shift
-        @controller.update_project(name)
+        @projects_controller.update(name)
       when 'filters'
-        @controller.list_filters
+        @projects_controller.list_filters
       when 'help'
         puts @parser.parser
       else
