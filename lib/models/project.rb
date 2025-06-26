@@ -25,7 +25,7 @@ module Clarity
       teaching: '👨🏻‍🏫',
       job: '👔',
       learning: '📚',
-      personal: '💁🏻‍♂️'
+      personal: '🫵🏻'
     }.freeze
 
     MOTIVATIONS = {
